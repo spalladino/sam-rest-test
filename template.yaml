@@ -4,36 +4,96 @@ Description: >
   sam-rest-test
 
   Sample SAM Template for sam-rest-test
-  
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  UserPoolName:
+    Type: String
+    Default: SamRestTestUserPool
+  
+  UserPoolClientName:
+    Type: String
+    Default: SamRestTestUserPoolClient
+
+  Stage:
+    Type: String
+    Default: Dev
+
 Resources:
-  HelloWorldFunction:
+  SamRestTestRelayerApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+      Cors: "'*'"
+      Auth:
+        DefaultAuthorizer: SamRestTestAuthorizer
+        Authorizers:
+          SamRestTestAuthorizer:
+            UserPoolArn: !GetAtt SamRestTestUserPool.Arn
+
+  SamRestTestRelayerApiFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello-world/
-      Handler: app.lambdaHandler
+      CodeUri: ./relayer-api/
+      Handler: lib.handler
       Runtime: nodejs12.x
       Events:
-        HelloWorld:
+        GetRelayer:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
-            Method: get
+            Path: /relayers/{relayerId}
+            Method: GET
+        CreateRelayer:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /relayers
+            Method: POST
+
+  SamRestTestUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Ref UserPoolName
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+      UsernameAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: false
+  
+  SamRestTestUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref SamRestTestUserPool
+      ClientName: !Ref UserPoolClientName
+      GenerateSecret: false
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
+  RelayerApiUrl:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+  RelayerApiFunctionArn:
+    Description: "Relayer API Function ARN"
+    Value: !GetAtt SamRestTestRelayerApiFunction.Arn
+  RelayerApiFunctionIamRole:
+    Description: "Implicit IAM Role created for the function"
+    Value: !GetAtt SamRestTestRelayerApiFunctionRole.Arn
+  UserPoolId:
+    Value: !Ref SamRestTestUserPool
+    Description:  Id for the user pool
+  UserPoolClientId:
+    Value: !Ref SamRestTestUserPoolClient

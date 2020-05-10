@@ -1,0 +1,23 @@
+{
+  "name": "relayer-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc",
+    "watch": "tsc -w",
+    "test": "jest"
+  },
+  "files": [
+    "package.json",
+    "lib/**/*.js"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.51",
+    "aws-lambda": "^1.0.6",
+    "jest": "^26.0.1"
+  }
+}
