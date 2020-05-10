@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "tsc",
     "watch": "tsc -w",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run compile"
   },
   "files": [
     "package.json",
