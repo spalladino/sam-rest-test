@@ -35,12 +35,17 @@ Resources:
           SamRestTestAuthorizer:
             UserPoolArn: !GetAtt SamRestTestUserPool.Arn
 
-  SamRestTestRelayerApiFunction:
+  SamRestTestRelayerGetFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./relayer-api/
-      Handler: lib.handler
+      Handler: lib.get
       Runtime: nodejs12.x
+      Timeout: 20
+      Environment:
+        Variables: { TABLE_NAME: !Ref SamRestTestRelayerTable, DYNAMO_ENDPOINT: '' }
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref SamRestTestRelayerTable }
       Events:
         GetRelayer:
           Type: Api
@@ -48,12 +53,46 @@ Resources:
             RestApiId: !Ref SamRestTestRelayerApi
             Path: /relayers/{relayerId}
             Method: GET
+
+  SamRestTestRelayerListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./relayer-api/
+      Handler: lib.list
+      Runtime: nodejs12.x
+      Timeout: 20
+      Environment:
+        Variables: { TABLE_NAME: !Ref SamRestTestRelayerTable, DYNAMO_ENDPOINT: '' }
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref SamRestTestRelayerTable }
+      Events:
+        GetRelayer:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamRestTestRelayerApi
+            Path: /relayers
+            Method: GET
+    
+  SamRestTestRelayerCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./relayer-api/
+      Handler: lib.create
+      Runtime: nodejs12.x
+      Timeout: 20
+      Environment:
+        Variables: { TABLE_NAME: !Ref SamRestTestRelayerTable, DYNAMO_ENDPOINT: '' }
+      Policies:
+        - DynamoDBWritePolicy: { TableName: !Ref SamRestTestRelayerTable }
+      Events:
         CreateRelayer:
           Type: Api
           Properties:
             RestApiId: !Ref SamRestTestRelayerApi
             Path: /relayers
             Method: POST
+            Auth:
+              Authorizer: NONE
 
   SamRestTestUserPool:
     Type: AWS::Cognito::UserPool
@@ -80,18 +119,30 @@ Resources:
       GenerateSecret: false
 
 
+  SamRestTestRelayerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: tenantId
+          AttributeType: S
+        - AttributeName: relayerId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tenantId
+          KeyType: HASH
+        - AttributeName: relayerId
+          KeyType: RANGE
+
+
 Outputs:
   RelayerApiUrl:
-    Description: "API Gateway endpoint URL for Dev stage"
+    Description: "API Gateway endpoint URL for current stage"
     Value: !Sub "https://${SamRestTestRelayerApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
-  RelayerApiFunctionArn:
-    Description: "Relayer API Function ARN"
-    Value: !GetAtt SamRestTestRelayerApiFunction.Arn
-  RelayerApiFunctionIamRole:
-    Description: "Implicit IAM Role created for the function"
-    Value: !GetAtt SamRestTestRelayerApiFunctionRole.Arn
   UserPoolId:
     Value: !Ref SamRestTestUserPool
-    Description:  Id for the user pool
+    Description: Id for the user pool
   UserPoolClientId:
     Value: !Ref SamRestTestUserPoolClient
+  RelayerTableName:
+    Value: !Ref SamRestTestRelayerTable
