@@ -8,7 +8,9 @@ if (DynamoEndpoint) DynamoOptions.endpoint = DynamoEndpoint;
 const Dynamo = new DynamoDB.DocumentClient(DynamoOptions);
 
 function makeResponse(body: object, statusCode = 200) {
-  return { body: JSON.stringify(body), statusCode };
+  return { body: JSON.stringify(body), statusCode, headers: {
+    "Access-Control-Allow-Origin": "*"
+  } };
 }
 
 function logEnv() {

@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Amplify, { Auth } from 'aws-amplify';
-import { UserPoolClientId, UserPoolId } from './aws.json';
+import { UserPoolClientId, UserPoolId, RelayerApiUrl } from './aws.json';
 
 const REGION = 'us-east-1';
 
@@ -15,6 +15,17 @@ Amplify.configure({
     userPoolId: UserPoolId,
     userPoolWebClientId: UserPoolClientId,
     mandatorySignIn: true
+  },
+  API: {
+    endpoints: [{
+      name: 'RelayerApi',
+      endpoint: RelayerApiUrl,
+      custom_header: async () => { 
+        // return { Authorization : 'token' } 
+        // return { Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`, 'Content-Type': 'application/json' }
+        return { 'Content-Type': 'application/json' };
+      }
+    }]
   }
 })
 

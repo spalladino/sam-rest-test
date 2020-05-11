@@ -1,7 +1,6 @@
 {
   "UserPoolClientId": "e0t9q09n0ia7erm6h10isom0",
   "UserPoolId": "us-east-1_guA9QDftl",
-  "RelayerApiFunctionIamRole": "arn:aws:iam::598931145132:role/sam-rest-test-SamRestTestRelayerApiFunctionRole-IPM25TXSTGPR",
-  "RelayerApiFunctionArn": "arn:aws:lambda:us-east-1:598931145132:function:sam-rest-test-SamRestTestRelayerApiFunction-W56FXGPM4P6V",
+  "RelayerTableName": "sam-rest-test-SamRestTestRelayerTable-WYPO6I2ZJ9L9",
   "RelayerApiUrl": "https://nb213nvuza.execute-api.us-east-1.amazonaws.com/Dev/"
 }

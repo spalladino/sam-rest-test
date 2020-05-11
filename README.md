@@ -5,10 +5,11 @@ Testing a RESTful CRUD API backed by DynamoDB managed via SAM.
 ## Local API testing
 
 - Install everything (npm install, docker, jq, sam, aws, etc)
+- Compile with `npm run compile` or `npm run watch` in `relayer-api`
 - Run `sam build` at the project root
 - Run `npm run dev:start-db` to start a docker container with a local dynamodb
 - Run `npm run dev:create-tables` to create local tables using the schema in `scripts/create-tables.sh` (ideally, this schema should be loaded from the `template.yaml` instead)
-- Run `npm run dev:start-api` to start a local version of the API gateway using `sam`
+- Run `npm run dev:start-api` to start a local version of the API gateway using `sam` (note that the local API only reloads after running `sam build` again, switching to webpack watch may help here - see next steps)
 
 Now try out the following requests:
 
@@ -23,9 +24,12 @@ curl 'http://localhost:4000/relayers'
 
 ## Next steps
 
-- [Use webpack](https://dev.to/elthrasher/managing-multiple-functions-with-aws-sam-and-webpack-1581) for faster reload in local development
-- Use a custom lambda authorizer to load the tenant info, and wrap the Dynamo client in an IAM role restricted to the current tenant
-- Setup unit tests to work either with a local dynamo or with a mock
+- Fix CORS issue (see [documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html))
+- Review difference between Lambda proxy and Lambda integration (see [this article](https://medium.com/@lakshmanLD/lambda-proxy-vs-lambda-integration-in-aws-api-gateway-3a9397af0e6d))
+- Use webpack for faster reload in local development (see [this article](https://dev.to/elthrasher/managing-multiple-functions-with-aws-sam-and-webpack-1581))
+- Use a custom lambda authorizer to load the tenant info, and wrap the Dynamo client in an IAM role restricted to the current tenant (see [this article](https://medium.com/@tarekbecker/serverless-enterprise-grade-multi-tenancy-using-aws-76ff5f4d0a23))
+- Setup unit tests for lambdas to work either with a local dynamo or with a mock
+- Setup swagger for the API, or create shared typescript interfaces for client and server (and figure out what are [API Gateway Models](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-data-transformations.html))
 
 ## See also
 

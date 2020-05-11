@@ -28,12 +28,20 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Stage
-      Cors: "'*'"
-      Auth:
-        DefaultAuthorizer: SamRestTestAuthorizer
-        Authorizers:
-          SamRestTestAuthorizer:
-            UserPoolArn: !GetAtt SamRestTestUserPool.Arn
+      Cors: '"*"'
+      ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
+      ## Enabling the following returns an 'Invalid mapping expression specified' error at CloudFormation level
+      # Cors:
+      #   AllowMethods: "GET, HEAD, POST"
+      #   AllowHeaders: "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent"
+      #   AllowOrigin: '"*"'
+      #   AllowCredentials: True
+      ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-controlling-access-to-apis.html
+      # Auth:
+      #   DefaultAuthorizer: SamRestTestAuthorizer
+      #   Authorizers:
+      #     SamRestTestAuthorizer:
+      #       UserPoolArn: !GetAtt SamRestTestUserPool.Arn
 
   SamRestTestRelayerGetFunction:
     Type: AWS::Serverless::Function
@@ -66,7 +74,7 @@ Resources:
       Policies:
         - DynamoDBReadPolicy: { TableName: !Ref SamRestTestRelayerTable }
       Events:
-        GetRelayer:
+        GetRelayers:
           Type: Api
           Properties:
             RestApiId: !Ref SamRestTestRelayerApi
@@ -91,9 +99,22 @@ Resources:
             RestApiId: !Ref SamRestTestRelayerApi
             Path: /relayers
             Method: POST
-            Auth:
-              Authorizer: NONE
 
+  SamRestTestRelayerOptionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./relayer-api/
+      Handler: lib.create
+      Runtime: nodejs12.x
+      Timeout: 20
+      Events:
+        Options:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SamRestTestRelayerApi
+            Path: /relayers/
+            Method: OPTIONS
+        
   SamRestTestUserPool:
     Type: AWS::Cognito::UserPool
     Properties:

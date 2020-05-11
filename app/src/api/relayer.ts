@@ -14,18 +14,28 @@ export interface Relayer {
 }
 
 export async function createRelayer(name: string) : Promise<string> { 
-  return '1';
-  const apiName = 'relayerapi';
-  const path = '/relayer';
+  const apiName = 'RelayerApi';
+  const path = 'relayers';
   const relayerId = getRandomId();
-  const res = await API.post(apiName, path, {
-    body: {
-      relayerId,
-      tenantId: "DEFAULT_TENANT",
-      name
-    }
-  });
-  console.log("RESPONSE", res);
+  const relayer =  {
+    relayerId,
+    name,
+    tenantId: "DEFAULT_TENANT"
+  }
+  try {
+    // Try with fetch in case there is an issue with amplify API class
+    const res = await fetch('https://nb213nvuza.execute-api.us-east-1.amazonaws.com/Dev/relayers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(relayer),
+      mode: 'cors'
+    });
+    // Replace by the following when CORS is solved
+    // const res = await API.post(apiName, path, { body: relayer });
+    console.log("RESPONSE", res);
+  } catch (err) {
+    console.error(`REQUEST FAILED`, err);
+  }
   return relayerId;
 }
 
