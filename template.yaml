@@ -28,16 +28,18 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Stage
+      ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
       Cors:
         AllowMethods: "'GET,HEAD,POST,PUT,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
         AllowOrigin: "'*'"
       ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-controlling-access-to-apis.html
-      # Auth:
-      #   DefaultAuthorizer: SamRestTestAuthorizer
-      #   Authorizers:
-      #     SamRestTestAuthorizer:
-      #       UserPoolArn: !GetAtt SamRestTestUserPool.Arn
+      Auth:
+        DefaultAuthorizer: SamRestTestAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: False ## See https://github.com/awslabs/serverless-application-model/issues/717
+        Authorizers:
+          SamRestTestAuthorizer:
+            UserPoolArn: !GetAtt SamRestTestUserPool.Arn
 
   SamRestTestRelayerGetFunction:
     Type: AWS::Serverless::Function

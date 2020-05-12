@@ -32,7 +32,7 @@ function App() {
       <div>
         <h1>Relayers</h1>
         { relayers.map((relayer) => (
-          <div>{relayer.name} {relayer.relayerId}</div>
+          <div key={relayer.relayerId}>{relayer.name} {relayer.relayerId}</div>
         ))}
       </div>
     </div>

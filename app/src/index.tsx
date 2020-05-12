@@ -20,11 +20,10 @@ Amplify.configure({
     endpoints: [{
       name: 'RelayerApi',
       endpoint: RelayerApiUrl,
-      custom_header: async () => { 
-        // return { Authorization : 'token' } 
-        // return { Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`, 'Content-Type': 'application/json' }
-        return { 'Content-Type': 'application/json' };
-      }
+      custom_header: async () => ({
+        Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`, 
+        'Content-Type': 'application/json',
+      })
     }]
   }
 })
