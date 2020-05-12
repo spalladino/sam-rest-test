@@ -6,8 +6,6 @@ stack_name = "sam-rest-dev-2"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-y6mbpvvalq8f"
 s3_prefix = "sam-rest-dev-2"
 region = "us-east-1"
-profile = "defender-dev"
-confirm_changeset = true
+confirm_changeset = false
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Stage=\"Dev\""
-
