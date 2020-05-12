@@ -24,8 +24,6 @@ curl 'http://localhost:4000/relayers'
 
 ## Next steps
 
-- Fix CORS issue (see [documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html))
-- Review difference between Lambda proxy and Lambda integration (see [this article](https://medium.com/@lakshmanLD/lambda-proxy-vs-lambda-integration-in-aws-api-gateway-3a9397af0e6d))
 - Use webpack for faster reload in local development (see [this article](https://dev.to/elthrasher/managing-multiple-functions-with-aws-sam-and-webpack-1581))
 - Use a custom lambda authorizer to load the tenant info, and wrap the Dynamo client in an IAM role restricted to the current tenant (see [this article](https://medium.com/@tarekbecker/serverless-enterprise-grade-multi-tenancy-using-aws-76ff5f4d0a23))
 - Setup unit tests for lambdas to work either with a local dynamo or with a mock
