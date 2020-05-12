@@ -12,27 +12,20 @@ Globals:
     CodeUri: ./relayer-api/
     Runtime: nodejs12.x
     Environment:
-        Variables: { TABLE_NAME: !Ref SamRestTestRelayerTable, DYNAMO_ENDPOINT: '' }
-
+      Variables: 
+        TABLE_NAME: !Ref RelayerTable
+        DYNAMO_ENDPOINT: ''
 
 Parameters:
-  UserPoolName:
-    Type: String
-    Default: SamRestTestUserPool
-  
-  UserPoolClientName:
-    Type: String
-    Default: SamRestTestUserPoolClient
-
   Stage:
     Type: String
     Default: Dev
 
-    
 Resources:
-  SamRestTestRelayerApi:
+  RelayerApi:
     Type: AWS::Serverless::Api
     Properties:
+      Name: !Sub '${AWS::StackName}-${Stage}-relayer-api'
       StageName: !Ref Stage
       ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
       Cors:
@@ -41,58 +34,61 @@ Resources:
         AllowOrigin: "'*'"
       ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-controlling-access-to-apis.html
       Auth:
-        DefaultAuthorizer: SamRestTestAuthorizer
+        DefaultAuthorizer: CognitoAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False ## See https://github.com/awslabs/serverless-application-model/issues/717
         Authorizers:
-          SamRestTestAuthorizer:
-            UserPoolArn: !GetAtt SamRestTestUserPool.Arn
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
 
-  SamRestTestRelayerGetFunction:
+  RelayerGetFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-get-fn'
       Handler: lib.get
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref SamRestTestRelayerTable }
+        - DynamoDBReadPolicy: { TableName: !Ref RelayerTable }
       Events:
         GetRelayer:
           Type: Api
           Properties:
-            RestApiId: !Ref SamRestTestRelayerApi
+            RestApiId: !Ref RelayerApi
             Path: /relayers/{relayerId}
             Method: GET
 
-  SamRestTestRelayerListFunction:
+  RelayerListFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-list-fn'
       Handler: lib.list
       Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref SamRestTestRelayerTable }
+        - DynamoDBReadPolicy: { TableName: !Ref RelayerTable }
       Events:
         GetRelayers:
           Type: Api
           Properties:
-            RestApiId: !Ref SamRestTestRelayerApi
+            RestApiId: !Ref RelayerApi
             Path: /relayers
             Method: GET
     
-  SamRestTestRelayerCreateFunction:
+  RelayerCreateFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-create-fn'
       Handler: lib.create
       Policies:
-        - DynamoDBWritePolicy: { TableName: !Ref SamRestTestRelayerTable }
+        - DynamoDBWritePolicy: { TableName: !Ref RelayerTable }
       Events:
         CreateRelayer:
           Type: Api
           Properties:
-            RestApiId: !Ref SamRestTestRelayerApi
+            RestApiId: !Ref RelayerApi
             Path: /relayers
             Method: POST
 
-  SamRestTestUserPool:
+  UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Ref UserPoolName
+      UserPoolName: !Sub '${AWS::StackName}-${Stage}-user-pool'
       AutoVerifiedAttributes:
         - email
       UsernameAttributes:
@@ -105,16 +101,17 @@ Resources:
           RequireSymbols: false
           RequireUppercase: false
       
-  SamRestTestUserPoolClient:
+  UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      UserPoolId: !Ref SamRestTestUserPool
-      ClientName: !Ref UserPoolClientName
+      UserPoolId: !Ref UserPool
+      ClientName: !Sub '${AWS::StackName}-${Stage}-user-pool-web-client'
       GenerateSecret: false
 
-  SamRestTestRelayerTable:
+  RelayerTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      TableName: !Sub '${AWS::StackName}-${Stage}-relayers'
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: tenantId
@@ -131,11 +128,11 @@ Resources:
 Outputs:
   RelayerApiUrl:
     Description: "API Gateway endpoint URL for current stage"
-    Value: !Sub "https://${SamRestTestRelayerApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+    Value: !Sub "https://${RelayerApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
   UserPoolId:
-    Value: !Ref SamRestTestUserPool
+    Value: !Ref UserPool
     Description: Id for the user pool
   UserPoolClientId:
-    Value: !Ref SamRestTestUserPoolClient
+    Value: !Ref UserPoolClient
   RelayerTableName:
-    Value: !Ref SamRestTestRelayerTable
+    Value: !Ref RelayerTable

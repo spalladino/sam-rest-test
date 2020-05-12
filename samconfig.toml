@@ -2,12 +2,12 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "sam-rest-test"
+stack_name = "sam-rest-dev-1"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-y6mbpvvalq8f"
-s3_prefix = "sam-rest-test"
+s3_prefix = "sam-rest-dev-1"
 region = "us-east-1"
 profile = "defender-dev"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "UserPoolName=\"SamRestTestUserPool\" UserPoolClientName=\"SamRestTestUserPoolClient\" Stage=\"Dev\""
+parameter_overrides = "Stage=\"Dev\""
 
