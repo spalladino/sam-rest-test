@@ -3,6 +3,7 @@
 
 # AWS
 .aws-sam/build
+app/src/aws.json
 
 ### Linux ###
 *~

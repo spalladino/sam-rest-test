@@ -1,6 +1,0 @@
-{
-  "UserPoolClientId": "e0t9q09n0ia7erm6h10isom0",
-  "UserPoolId": "us-east-1_guA9QDftl",
-  "RelayerTableName": "sam-rest-test-SamRestTestRelayerTable-WYPO6I2ZJ9L9",
-  "RelayerApiUrl": "https://nb213nvuza.execute-api.us-east-1.amazonaws.com/Dev/"
-}
