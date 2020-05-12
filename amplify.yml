@@ -1,0 +1,33 @@
+version: 0.1
+backend:
+  phases:
+    preBuild:
+      commands:
+        - npm install -g @aws-amplify/cli
+        - yum install jq -y
+        - python3 -m pip install --upgrade --user cfn-lint aws-sam-cli
+        
+    build:
+      commands:
+        - amplifyPush --simple
+        - npm run build
+        - sam build
+        - sam deploy --stack-name --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-rest-${AWS_BRANCH}
+
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - STACKNAME=sam-rest-${AWS_BRANCH} npm run build:export-stack-output
+        - cd app
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: app/build
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
