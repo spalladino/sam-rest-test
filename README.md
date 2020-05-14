@@ -10,13 +10,13 @@ Testing a RESTful CRUD API backed by DynamoDB managed via SAM.
 
 ## Setup
 
-- Install [node 12](https://nodejs.org/en/), [docker](https://docs.docker.com/get-docker/), [jq](https://github.com/stedolan/jq/wiki/Installation), [sam-cli](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (yeah, asks for homebrew), [aws cli](https://aws.amazon.com/cli/), and optionally the [VSCode plugin]((https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html))
+- Install [node 12](https://nodejs.org/en/), [docker](https://docs.docker.com/get-docker/), [jq](https://github.com/stedolan/jq/wiki/Installation), [sam-cli](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (yeah, asks for homebrew), [aws cli](https://aws.amazon.com/cli/), and optionally the [VSCode plugin](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 - Run `npm install` in the package root, and inside `api` and `app`
 - Run `npm run build` (or `npm run watch`) at the project root to build the `api` (output should be in `api/build`)
 
 ## Deploying to AWS
 
-- Run `sam deploy --guided` to deploy to AWS (please remember to use the AWS development account), you'll need to re-run this every time you modify
+- Run `sam deploy --guided` to deploy to AWS (please remember to use the AWS development account), you'll need to re-run this every time you modify your lambda code or the content of the template
 - Run `npm run dev:create-user` to create a user `sample@example.com` with password `password` in the user pool
 - Run `npm run dev:export-stack` to write a local `app/src/aws.json` file with the IDs of the resources created in AWS that will be used by the react app
 
