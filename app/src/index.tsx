@@ -19,7 +19,7 @@ Amplify.configure({
   API: {
     endpoints: [{
       name: 'RelayerApi',
-      endpoint: RelayerApiUrl,
+      endpoint: process.env.REACT_APP_API_URL || RelayerApiUrl,
       custom_header: async () => ({
         Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`, 
         'Content-Type': 'application/json',

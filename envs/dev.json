@@ -1,13 +1,13 @@
 {
-  "SamRestTestRelayerGetFunction": {
+  "RelayerGetFunction": {
     "TABLE_NAME": "relayers",
     "DYNAMO_ENDPOINT": "http://dynamodb:8000"
   },
-  "SamRestTestRelayerListFunction": {
+  "RelayerListFunction": {
     "TABLE_NAME": "relayers",
     "DYNAMO_ENDPOINT": "http://dynamodb:8000"
   },
-  "SamRestTestRelayerCreateFunction": {
+  "RelayerCreateFunction": {
     "TABLE_NAME": "relayers",
     "DYNAMO_ENDPOINT": "http://dynamodb:8000"
   }

@@ -1,11 +1,7 @@
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
-import { DynamoDB } from 'aws-sdk';
+import { TableName, getDB } from '../shared/db';
 
-const TableName = process.env.TABLE_NAME!;
-const DynamoEndpoint = process.env.DYNAMO_ENDPOINT;
-const DynamoOptions = {} as { endpoint?: string };
-if (DynamoEndpoint) DynamoOptions.endpoint = DynamoEndpoint;
-const Dynamo = new DynamoDB.DocumentClient(DynamoOptions);
+const Dynamo = getDB();
 
 function makeResponse(body: object, statusCode = 200) {
   return { body: JSON.stringify(body), statusCode, headers: {
@@ -13,13 +9,7 @@ function makeResponse(body: object, statusCode = 200) {
   } };
 }
 
-function logEnv() {
-  console.log(`TABLE_NAME = ${TableName}`);
-  console.log(`DYNAMO = ${JSON.stringify(DynamoOptions)}`);
-}
-
 export async function get(event: APIGatewayEvent, context: Context) : Promise<APIGatewayProxyResult> {
-  logEnv();
   console.log(`GET EVENT = ${JSON.stringify(event)}`);
   try {
     const data = await Dynamo.get({ TableName, Key: {
@@ -38,7 +28,6 @@ export async function get(event: APIGatewayEvent, context: Context) : Promise<AP
 }
 
 export async function list(event: APIGatewayEvent, context: Context) : Promise<APIGatewayProxyResult> {
-  logEnv();
   console.log(`LIST EVENT = ${JSON.stringify(event)}`);
   try {
     const data = await Dynamo.query({ 
@@ -55,7 +44,6 @@ export async function list(event: APIGatewayEvent, context: Context) : Promise<A
 }
 
 export async function create(event: APIGatewayEvent, context: Context) : Promise<APIGatewayProxyResult> {
-  logEnv();
   console.log(`CREATE EVENT = ${JSON.stringify(event)}`);
   try {
     const data = JSON.parse(event.body!) as any; // sorry

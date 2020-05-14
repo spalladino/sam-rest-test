@@ -9,7 +9,7 @@ Description: >
 Globals:
   Function:
     Timeout: 20
-    CodeUri: ./relayer-api/
+    CodeUri: ./api/build/
     Runtime: nodejs12.x
     Environment:
       Variables: 
@@ -44,7 +44,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-get-fn'
-      Handler: lib.get
+      Handler: relayer.get
       Policies:
         - DynamoDBReadPolicy: { TableName: !Ref RelayerTable }
       Events:
@@ -59,7 +59,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-list-fn'
-      Handler: lib.list
+      Handler: relayer.list
       Policies:
         - DynamoDBReadPolicy: { TableName: !Ref RelayerTable }
       Events:
@@ -74,7 +74,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-create-fn'
-      Handler: lib.create
+      Handler: relayer.create
       Policies:
         - DynamoDBWritePolicy: { TableName: !Ref RelayerTable }
       Events:

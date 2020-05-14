@@ -1,5 +1,4 @@
 {
-  "include": ["./src"],
   "compilerOptions": {
     "incremental": true,
     "target": "es2017",
@@ -8,7 +7,6 @@
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "declaration": true,
-    "outDir": "./lib"
+    "declaration": false
   }
 }

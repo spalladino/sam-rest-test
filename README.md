@@ -25,6 +25,7 @@ curl 'http://localhost:4000/relayers'
 ## Next steps
 
 - Use webpack for faster reload in local development (see [this article](https://dev.to/elthrasher/managing-multiple-functions-with-aws-sam-and-webpack-1581))
+- Find out a better way to define env variables for local testing, that don't require adding the name of each function in `envs/dev.json`
 - Use a custom lambda authorizer to load the tenant info, and wrap the Dynamo client in an IAM role restricted to the current tenant (see [this article](https://medium.com/@tarekbecker/serverless-enterprise-grade-multi-tenancy-using-aws-76ff5f4d0a23))
 - Setup unit tests for lambdas to work either with a local dynamo or with a mock
 - Setup swagger for the API, or create shared typescript interfaces for client and server (and figure out what are [API Gateway Models](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-data-transformations.html))

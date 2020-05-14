@@ -4,13 +4,17 @@
   "description": "This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.",
   "main": "index.js",
   "scripts": {
-    "build": "cd relayer-api && npm install && npm run compile",
-    "build:export-stack-output": "scripts/collect-stack-output.sh > app/src/aws.json",
+    "dev:export-stack": "scripts/collect-stack-output.sh > app/src/aws.json",
     "dev:start-db": "docker network create sam-rest-test-network; docker run --rm --name dynamodb --network sam-rest-test-network -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -inMemory -sharedDb",
     "dev:create-tables": "scripts/create-tables.sh",
-    "dev:start-api": "sam local start-api --env-vars envs/dev.json --port 4000 --docker-network sam-rest-test-network"
+    "dev:start-api": "sam local start-api --env-vars envs/dev.json --port 4000 --docker-network sam-rest-test-network",
+    "build": "cd api && npm run build",
+    "watch": "cd api && npm run watch"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.9.2"
+  }
 }
