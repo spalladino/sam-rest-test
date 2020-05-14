@@ -23,6 +23,7 @@ Testing a RESTful CRUD API backed by DynamoDB managed via SAM.
 ## Running the app
 
 - Run `npm run start` in the `app` folder
+- Note that the REGION in the `app` is hardcoded to `us-east-1`, change it in `app/src/index.ts` if needed
 
 ## Running locally
 
@@ -41,6 +42,8 @@ curl 'http://localhost:4000/relayers/1'
 # List all relayers
 curl 'http://localhost:4000/relayers'
 ```
+
+Also, note that the react-app will try to connect to the cognito user pool for auth. This means you need to deploy to AWS before running the app locally. If you want to skip this and run everything locally, remove the authorization `custom_header` from `app/src/index.ts`, and the call to `withAuthenticator` in `app/src/App.ts`.
 
 ## Next steps
 
