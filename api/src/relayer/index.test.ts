@@ -1,9 +1,12 @@
-import { get, create } from ".";
+import { list } from ".";
 import { APIGatewayProxyEvent, Context } from "aws-lambda";
 
-describe('get', function () {
-  test('get returns 200', async function () {
-    const result = await get({} as APIGatewayProxyEvent, {} as Context);
+jest.mock('../shared/db');
+
+describe('list', function () {
+  test('list returns mock data', async function () {
+    const result = await list({} as APIGatewayProxyEvent, {} as Context);
     expect(result.statusCode).toEqual(200);
+    expect(JSON.parse(result.body)).toEqual([{ relayerId: 1, name: 'foo' }]);
   });
 });
