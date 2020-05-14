@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "toml": "^3.0.0",
     "typescript": "^3.9.2"
   }
 }

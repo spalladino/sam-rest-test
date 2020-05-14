@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-## TODO: Get from samconfig.toml
-# Stack name
-STACKNAME=${STACKNAME:-"sam-rest-dev-2"}
+# Load stack name
+STACKNAME=${STACKNAME:-$(./scripts/get-sam-config.js stack_name)}
 
 # Collect stack info and reformat it
 aws cloudformation describe-stacks --stack-name $STACKNAME --query 'Stacks[0].Outputs' | \

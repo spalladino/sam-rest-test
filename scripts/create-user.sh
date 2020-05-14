@@ -5,9 +5,8 @@ set -euo pipefail
 USERNAME=sample3@example.com
 PASSWORD=password
 
-## TODO: Get from samconfig.toml
-# Stack name
-STACKNAME=${STACKNAME:-"sam-rest-dev-2"}
+# Load stack name
+STACKNAME=${STACKNAME:-$(./scripts/get-sam-config.js stack_name)}
 
 # Get user pool id
 USERPOOL=$(aws cloudformation describe-stacks --stack-name $STACKNAME --query 'Stacks[0].Outputs[?OutputKey=='\''UserPoolId'\''].OutputValue' --output text)
