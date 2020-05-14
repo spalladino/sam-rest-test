@@ -47,6 +47,8 @@ curl 'http://localhost:4000/relayers'
 - Find out a better way to define env variables for local testing, that don't require adding the name of each function in `api/envs/dev.json`
 - Split the `template.yaml` into several templates, in order to separate the resources updated frequently (eg lambdas) and the more permanent resources (eg cognito)
 - Use a custom lambda authorizer to load the tenant info, and wrap the Dynamo client in an IAM role restricted to the current tenant (see [this article](https://medium.com/@tarekbecker/serverless-enterprise-grade-multi-tenancy-using-aws-76ff5f4d0a23))
-- Setup unit tests for lambdas to work either with the local dynamodb or with a mock, and set up a CI/CD using CircleCI or Github actions
+- Setup unit tests for lambdas using [jest-dynamodb](https://github.com/shelfio/jest-dynamodb) or [jest-dynalite](https://github.com/freshollie/jest-dynalite/blob/master/src/db.ts)
+- Set up a CI/CD using CircleCI or Github actions
 - Set up a deployment step to S3 for the built react-app
+- Try out local lambda debugging
 - Setup swagger for the API, or create shared typescript interfaces for client and server (and figure out what are [API Gateway Models](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-data-transformations.html))
