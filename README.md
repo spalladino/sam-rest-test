@@ -54,4 +54,3 @@ Also, note that the react-app will try to connect to the cognito user pool for a
 - Set up a CI/CD using CircleCI or Github actions
 - Set up a deployment step to S3 for the built react-app
 - Try out local lambda debugging
-- Setup swagger for the API, or create shared typescript interfaces for client and server (and figure out what are [API Gateway Models](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-data-transformations.html))
