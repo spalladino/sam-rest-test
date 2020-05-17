@@ -9,7 +9,7 @@ services:
     ports:
       - '8000:8000'
     working_dir: /home/dynamodblocal
-    command: '-jar DynamoDBLocal.jar -sharedDb -dbPath .'
+    command: '-jar DynamoDBLocal.jar -inMemory -sharedDb'
 
 networks:
   backend:

@@ -60,8 +60,6 @@ export const authorize = async (event:any, context:any, cb:any) => {
 
         const policy = PolicyGenerator.generateApiPolicy(result.sub, 'Allow', event.methodArn, context)
 
-        console.log(policy.policyDocument.Statement[0]);
-
         cb(null, policy);
 
     } catch (err) {
