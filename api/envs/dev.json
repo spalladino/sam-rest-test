@@ -1,14 +1,17 @@
 {
   "RelayerGetFunction": {
     "TABLE_NAME": "relayers",
-    "DYNAMO_ENDPOINT": "http://dynamodb:8000"
+    "DYNAMO_ENDPOINT": "http://dynamodb:8000",
+    "ENV": "dev"
   },
   "RelayerListFunction": {
     "TABLE_NAME": "relayers",
-    "DYNAMO_ENDPOINT": "http://dynamodb:8000"
+    "DYNAMO_ENDPOINT": "http://dynamodb:8000",
+    "ENV": "dev"
   },
   "RelayerCreateFunction": {
     "TABLE_NAME": "relayers",
-    "DYNAMO_ENDPOINT": "http://dynamodb:8000"
+    "DYNAMO_ENDPOINT": "http://dynamodb:8000",
+    "ENV": "dev"
   }
 }

@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import Amplify, { Auth } from 'aws-amplify';
 import { UserPoolClientId, UserPoolId, RelayerApiUrl } from './aws.json';
 
-const REGION = 'us-east-1';
+const REGION = 'us-west-2';
 
 Amplify.configure({
   Auth: {

@@ -1,7 +1,7 @@
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
-import { TableName, getDB } from '../shared/db';
+import { TableName, getDBWithCredentials } from '../shared/db';
+import { getUser } from '../shared/auth';
 
-const Dynamo = getDB();
 
 function makeResponse(body: object, statusCode = 200) {
   return { body: JSON.stringify(body), statusCode, headers: {
@@ -11,9 +11,11 @@ function makeResponse(body: object, statusCode = 200) {
 
 export async function get(event: APIGatewayEvent, context: Context) : Promise<APIGatewayProxyResult> {
   console.log(`GET EVENT = ${JSON.stringify(event)}`);
+  const user = getUser(event);
+  const Dynamo = getDBWithCredentials(user.dynamoCredentials)
   try {
     const data = await Dynamo.get({ TableName, Key: {
-      tenantId: 'DEFAULT_TENANT',
+      tenantId: user.tenantId,
       relayerId: event.pathParameters!.relayerId
     }}).promise();
     console.log(`DYNAMO RESPONSE = ${JSON.stringify(data)}`); 
@@ -29,11 +31,13 @@ export async function get(event: APIGatewayEvent, context: Context) : Promise<AP
 
 export async function list(event: APIGatewayEvent, context: Context) : Promise<APIGatewayProxyResult> {
   console.log(`LIST EVENT = ${JSON.stringify(event)}`);
+  const user = getUser(event);
+  const Dynamo = getDBWithCredentials(user.dynamoCredentials)
   try {
     const data = await Dynamo.query({ 
       TableName, 
       KeyConditionExpression: 'tenantId = :tid',
-      ExpressionAttributeValues: { ':tid': 'DEFAULT_TENANT' }
+      ExpressionAttributeValues: { ':tid': user.tenantId }
     }).promise();
     console.log(`DYNAMO RESPONSE = ${JSON.stringify(data)}`);
     return makeResponse(data.Items || []);
@@ -45,11 +49,13 @@ export async function list(event: APIGatewayEvent, context: Context) : Promise<A
 
 export async function create(event: APIGatewayEvent, context: Context) : Promise<APIGatewayProxyResult> {
   console.log(`CREATE EVENT = ${JSON.stringify(event)}`);
+  const user = getUser(event);
+  const Dynamo = getDBWithCredentials(user.dynamoCredentials)
   try {
     const data = JSON.parse(event.body!) as any; // sorry
     const response = await Dynamo.put({ TableName, Item: {
-      tenantId: 'DEFAULT_TENANT',
-      relayerId: data.relayerId,
+      tenantId: user.tenantId,
+      relayerId: data.relayerId,  //TODO: make a uuid
       name: data.name,
     }}).promise();
     console.log(`DYNAMO RESPONSE = ${JSON.stringify(response)}`);

@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev:export-stack": "scripts/collect-stack-output.sh > app/src/aws.json",
-    "dev:start-db": "docker network create sam-rest-test-network; docker run --rm --name dynamodb --network sam-rest-test-network -p 8000:8000 amazon/dynamodb-local -jar DynamoDBLocal.jar -inMemory -sharedDb",
+    "dev:start-db": "docker-compose down && docker-compose up -d",
     "dev:create-tables": "scripts/create-tables.sh",
     "dev:start-api": "sam local start-api --env-vars api/envs/dev.json --port 4000 --docker-network sam-rest-test-network",
     "dev:create-user": "scripts/create-user.sh",
+    "dev:local": "npm run build && npm run dev:start-db && npm run dev:create-tables && npm run dev:start-api",
     "build": "cd api && npm run build",
     "watch": "cd api && npm run watch"
   },

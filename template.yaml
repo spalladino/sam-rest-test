@@ -15,6 +15,7 @@ Globals:
       Variables: 
         TABLE_NAME: !Ref RelayerTable
         DYNAMO_ENDPOINT: ''
+        ENV: ''
 
 Parameters:
   Stage:
@@ -27,6 +28,12 @@ Resources:
     Properties:
       Name: !Sub '${AWS::StackName}-${Stage}-relayer-api'
       StageName: !Ref Stage
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: '/*'
+          LoggingLevel: 'INFO'
+          DataTraceEnabled: true
+          HttpMethod: '*'
       ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-api-corsconfiguration.html
       Cors:
         AllowMethods: "'GET,HEAD,POST,PUT,DELETE,OPTIONS'"
@@ -34,19 +41,84 @@ Resources:
         AllowOrigin: "'*'"
       ## See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-controlling-access-to-apis.html
       Auth:
-        DefaultAuthorizer: CognitoAuthorizer
+        DefaultAuthorizer: LambdaTokenAuthorizer
         AddDefaultAuthorizerToCorsPreflight: False ## See https://github.com/awslabs/serverless-application-model/issues/717
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt UserPool.Arn
+          LambdaTokenAuthorizer:
+            FunctionArn: !GetAtt AuthorizerFunction.Arn
+
+  AuthorizerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: APIAccessDynamoTables
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: DynamoAssumeRolePolicy
+                Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: '*'
+
+  DynamoAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt AuthorizerRole.Arn
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: APIAccessDynamoTables
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: AccessDynamoTables
+                Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:BatchGetItem
+                  - dynamodb:Query
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:BatchWriteItem
+                Resource: '*'
+
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-${Stage}-api-gateway-authorizer'
+      Handler: authorizer.authorize
+      Role: !GetAtt AuthorizerRole.Arn
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref UserPool
+          REGION: !Sub '${AWS::Region}'
+          CLIENT_ID: !Ref UserPoolClient
+          DYNAMO_ROLE: !GetAtt DynamoAccessRole.Arn
 
   RelayerGetFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-get-fn'
       Handler: relayer.get
-      Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref RelayerTable }
       Events:
         GetRelayer:
           Type: Api
@@ -60,8 +132,6 @@ Resources:
     Properties:
       FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-list-fn'
       Handler: relayer.list
-      Policies:
-        - DynamoDBReadPolicy: { TableName: !Ref RelayerTable }
       Events:
         GetRelayers:
           Type: Api
@@ -75,8 +145,6 @@ Resources:
     Properties:
       FunctionName: !Sub '${AWS::StackName}-${Stage}-relayer-api-create-fn'
       Handler: relayer.create
-      Policies:
-        - DynamoDBWritePolicy: { TableName: !Ref RelayerTable }
       Events:
         CreateRelayer:
           Type: Api
@@ -93,6 +161,10 @@ Resources:
         - email
       UsernameAttributes:
         - email
+      Schema:
+        - Name: tenantId
+          AttributeDataType: String
+          Mutable: false
       Policies:
         PasswordPolicy:
           MinimumLength: 6

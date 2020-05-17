@@ -1,6 +1,5 @@
 import { API } from 'aws-amplify';
 
-const TENANT_ID = 'DEFAULT_TENANT';
 const API_NAME = 'RelayerApi';
 
 // quick and dirty random id generation
@@ -11,7 +10,6 @@ function getRandomId(): string {
 export interface Relayer {
   name: string;
   relayerId: string;
-  tenantId: string;
 }
 
 export async function createRelayer(name: string) : Promise<string> { 
@@ -20,7 +18,6 @@ export async function createRelayer(name: string) : Promise<string> {
   const relayer =  {
     relayerId,
     name,
-    tenantId: TENANT_ID
   }
   await API.post(API_NAME, path, { body: relayer });
   return relayerId;

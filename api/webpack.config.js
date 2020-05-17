@@ -1,7 +1,10 @@
 const { resolve } = require('path');
 
 module.exports = {
-  entry: { relayer: './src/relayer/index.ts' },
+  entry: {
+    relayer: './src/relayer/index.ts',
+    authorizer: './src/authorizer/index.ts'
+  },
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
