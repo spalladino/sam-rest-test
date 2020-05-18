@@ -1,6 +1,6 @@
 export const TableName = 'relayer-test';
 
-export function getDB() {
+export function getDBWithCredentials() {
   return {
     query: () => ({
       promise: async () => (
