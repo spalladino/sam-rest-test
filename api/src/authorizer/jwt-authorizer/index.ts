@@ -26,6 +26,7 @@ export class JwtAuthorizer {
             client.getSigningKey(kid, (err, key) => {
                 if (err) {
                     reject(err);
+                    return
                 }
                 resolve(key.getPublicKey());
             });
@@ -41,6 +42,7 @@ export class JwtAuthorizer {
             jwt.verify(token, cert, options, (err, decoded) => {
                 if (err) {
                     reject(err);
+                    return
                 }
 
                 resolve(decoded);

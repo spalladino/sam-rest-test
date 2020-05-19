@@ -26,6 +26,9 @@ export class PolicyGenerator {
     }
 
     static generateDynamoPolicy(tenantId: string) : any {
+        if(!tenantId) {
+            throw new Error("tenantId is required for a dynamo policy")
+        }
         return {
             "Version": "2012-10-17",
             "Statement": [

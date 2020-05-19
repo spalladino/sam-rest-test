@@ -3,13 +3,11 @@ import { PolicyGenerator } from "./policy-generator/policy-generator";
 import { STS } from "aws-sdk";
 import { AssumeRoleRequest } from "aws-sdk/clients/sts";
 
-const AUDIENCE = process.env.CLIENT_ID;
 const JWKS_URI = `https://cognito-idp.${process.env.REGION}.amazonaws.com/${process.env.USER_POOL_ID}/.well-known/jwks.json`;
 const TOKEN_ISSUER = `https://cognito-idp.${process.env.REGION}.amazonaws.com/${process.env.USER_POOL_ID}`;
-const DYNAMO_ROLE = process.env.DYNAMO_ROLE;
 
 export const authorize = async (event: any, context: any, cb: any) => {
-  if (!AUDIENCE) {
+  if (!process.env.CLIENT_ID) {
     throw new Error("env var CLIENT_ID not specified");
   }
   if (!process.env.REGION) {
@@ -18,13 +16,17 @@ export const authorize = async (event: any, context: any, cb: any) => {
   if (!process.env.USER_POOL_ID) {
     throw new Error("env var USER_POOL_ID not specified");
   }
-  if (!DYNAMO_ROLE) {
+  if (!process.env.DYNAMO_ROLE) {
     throw new Error("env var DYNAMO_ROLE not specified");
   }
 
   try {
     const token = event.authorizationToken.substring(7);
-    const client = new JwtAuthorizer(TOKEN_ISSUER, JWKS_URI, AUDIENCE);
+    const client = new JwtAuthorizer(
+      TOKEN_ISSUER,
+      JWKS_URI,
+      process.env.CLIENT_ID
+    );
     const result = await client.authorize(token);
 
     if (!result) {
@@ -35,7 +37,7 @@ export const authorize = async (event: any, context: any, cb: any) => {
 
     //TODO: get from cognito lookup from sub instead (so we can use access_token)
     if (!result["custom:tenantId"]) {
-      console.warn("user has no tenantId, unauthorized");
+      console.log("user has no tenantId, unauthorized");
       cb("Unauthorized");
       return;
     }
@@ -45,7 +47,7 @@ export const authorize = async (event: any, context: any, cb: any) => {
     );
 
     const tokenRequest: AssumeRoleRequest = {
-      RoleArn: DYNAMO_ROLE,
+      RoleArn: process.env.DYNAMO_ROLE,
       RoleSessionName: result.sub,
       Policy: JSON.stringify(dynamoPolicy),
       DurationSeconds: 900, // 900 is minimum
@@ -55,7 +57,7 @@ export const authorize = async (event: any, context: any, cb: any) => {
     const dynamoToken = await sts.assumeRole(tokenRequest).promise();
 
     // does not support rich objects, just string values (must stringify objects)
-    const context = {
+    const authContext = {
       tenantId: tenantId,
       dynamoCredentials: JSON.stringify(dynamoToken.Credentials),
     };
@@ -64,7 +66,7 @@ export const authorize = async (event: any, context: any, cb: any) => {
       result.sub,
       "Allow",
       event.methodArn,
-      context
+      authContext
     );
 
     cb(null, policy);
